@@ -1,0 +1,14 @@
+head
+  title Leaderboard
+
+body
+  div(ng-app='app')
+    +test
+
+template(name='test')
+  each skills
+    p {{name}}
+  div(ng-controller='skillC')
+    input(ng-model='search')
+    div(ng-repeat='skill in skills')
+      span [[skill.name]]

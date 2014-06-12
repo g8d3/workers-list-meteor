@@ -7,3 +7,9 @@ standard-app-packages
 autopublish
 insecure
 jade
+coffeescript
+stylus
+ngMeteor
+accounts-base
+accounts-ui
+accounts-password

@@ -2,13 +2,19 @@
   "meteor": {},
   "dependencies": {
     "basePackages": {
-      "jade": {}
+      "jade": {},
+      "ngMeteor": {}
     },
     "packages": {
       "jade": {
         "git": "https://github.com/mquandalle/meteor-jade.git",
         "tag": "v0.2.4",
         "commit": "a47a4c59daaa57e7fe5f1544d4ea76d95a5c9abf"
+      },
+      "ngMeteor": {
+        "git": "https://github.com/loneleeandroo/ngMeteor.git",
+        "tag": "v0.1.22",
+        "commit": "170d9309fe16d7d38bffc1a6ce42a379be27cdaa"
       }
     }
   }
