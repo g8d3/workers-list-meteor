@@ -91,3 +91,9 @@ if Meteor.isClient
       'click .remove': (event) ->
         skillId = event.target.dataset.id
         Meteor.call('removeUserSkill', Meteor.userId(), skillId)
+
+Router.configure
+  layoutTemplate: 'layout'
+Router.map ->
+  @route 'skillsShow', path: '/skills'
+  @route 'home', path: '/'

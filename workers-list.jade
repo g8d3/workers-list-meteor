@@ -1,7 +1,15 @@
-head
-  title Worker List
+template(name='layout')
+  head
+    title Worker List
 
-body
+  body
+
+    a(href='/skills') Skills
+    a(href='/') Home
+    +yield
+
+template(name='home')
+  br
   +loginButtons
   br
   +skills
@@ -22,6 +30,9 @@ template(name='skills')
 template(name='usersSkills')
   each users
     +userSkills
+
+template(name='skillsShow')
+  h1 Skills
 
 template(name='userSkills')
   h1 User #{_id} #{name}
