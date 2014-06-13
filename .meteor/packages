@@ -9,7 +9,6 @@ insecure
 jade
 coffeescript
 stylus
-ngMeteor
 accounts-base
 accounts-ui
 accounts-password

@@ -1,6 +1,5 @@
 {
   "packages": {
-    "jade": {},
-    "ngMeteor": {}
+    "jade": {}
   }
 }

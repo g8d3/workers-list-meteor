@@ -2,13 +2,37 @@ head
   title Leaderboard
 
 body
-  div(ng-app='app')
-    +test
+  +loginButtons
+  br
+  +skills
+  +userSkills
 
-template(name='test')
-  each skills
-    p {{name}}
-  div(ng-controller='skillC')
-    input(ng-model='search')
-    div(ng-repeat='skill in skills')
-      span [[skill.name]]
+template(name='skills')
+  input.create(placeholder='Create skills...')
+  span.hidden.notice Created!
+  br
+  input.search(placeholder='Search skills...')
+  .fixed-height
+    each skills
+      input.edit.skill(value=name data-id=_id)
+      button.remove(data-id=_id) Remove
+      span.hidden.notice Edited!
+      br
+
+template(name='userSkills')
+  if user
+    span User: #{email}
+    br
+    input.search(placeholder="Add skills...")
+    br
+    .fixed-height
+      each skills
+        button.skill(data-id=_id) #{name}
+        span.hidden.notice Added!
+        br
+    h2 Added Skills
+    each yourSkills
+      span.fixed-width #{name}
+      button.remove(data-id=_id) Remove
+      span.hidden.notice Removed!
+      br
