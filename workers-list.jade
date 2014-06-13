@@ -1,11 +1,11 @@
 head
-  title Leaderboard
+  title Worker List
 
 body
   +loginButtons
   br
   +skills
-  +userSkills
+  +usersSkills
 
 template(name='skills')
   input.create(placeholder='Create skills...')
@@ -19,20 +19,27 @@ template(name='skills')
       span.hidden.notice Edited!
       br
 
+template(name='usersSkills')
+  each users
+    +userSkills
+
 template(name='userSkills')
-  if user
-    span User: #{email}
-    br
-    input.search(placeholder="Add skills...")
-    br
-    .fixed-height
-      each skills
-        button.skill(data-id=_id) #{name}
-        span.hidden.notice Added!
-        br
-    h2 Added Skills
-    each yourSkills
-      span.fixed-width #{name}
-      button.remove(data-id=_id) Remove
-      span.hidden.notice Removed!
+  h1 User #{_id} #{name}
+  ul
+    each urls
+      li
+        a(href=href) #{content}
+  br
+  input.search(placeholder="Add skills...")
+  br
+  .fixed-height
+    each skills
+      button.skill(data-id=_id) #{name}
+      span.hidden.notice Added!
       br
+  h2 Added Skills
+  each yourSkills
+    span.fixed-width #{name}
+    button.remove(data-id=_id) Remove
+    span.hidden.notice Removed!
+    br
