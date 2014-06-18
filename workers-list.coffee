@@ -91,9 +91,19 @@ if Meteor.isClient
       'click .remove': (event) ->
         skillId = event.target.dataset.id
         Meteor.call('removeUserSkill', Meteor.userId(), skillId)
+  Template.profile = $.extend Template.profile,
+    events:
+      'keyup input': (event) ->
+        if event.which == 13
+          null
+  Template.home = $.extend Template.home,
+    rendered: ->
+      $('.dropdown').dropdown()
+
 
 Router.configure
   layoutTemplate: 'layout'
 Router.map ->
   @route 'skillsShow', path: '/skills'
   @route 'home', path: '/'
+  @route 'profile', path: '/profile'

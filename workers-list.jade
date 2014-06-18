@@ -1,19 +1,31 @@
 template(name='layout')
-  head
-    title Worker List
-
-  body
-
-    a(href='/skills') Skills
-    a(href='/') Home
-    +yield
+  a(href='/skills') Skills
+  a(href='/') Home
+  a(href='/profile') Profile
+  br
+  .ui.dropdown
+    .text Update
+    i.dropdown.icon
+    .menu
+      .item A
+      .item B
+      .item C
+  +yield
 
 template(name='home')
-  br
   +loginButtons
   br
   +skills
   +usersSkills
+
+template(name='profile')
+  label
+    | Name:
+    input(name='name')
+  br
+  label
+    | Avatar:
+    input(type='file' name='avatar')
 
 template(name='skills')
   input.create(placeholder='Create skills...')
