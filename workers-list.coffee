@@ -85,14 +85,12 @@ if Meteor.isClient
     userSkills = UserSkill.find(userId: Meteor.userId()).fetch()
     (userSkill.skillId for userSkill in userSkills)
 
-  Session.setDefault('skillsSearchId', 0)
   Template.skillsSearch = $.extend Template.skillsSearch,
     rendered: ->
-      Session.set('skillsSearchId', Session.get('skillsSearchId') + 1)
       Session.set('s' + @_id, null)
       Session.set('searchFocused' + @_id, null)
 
-    searchFocused: -> Session.get('searchFocused')
+    searchFocused: -> Session.get('searchFocused' + @_id)
 
     events:
       'keyup .search': (event,t) ->
