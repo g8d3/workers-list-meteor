@@ -1,33 +1,92 @@
 template(name='layout')
-  a(href='/skills') Skills
-  a(href='/') Home
-  a(href='/profile') Profile
-  br
-  .ui.dropdown
-    .text Update
-    i.dropdown.icon
-    .menu
-      .item A
-      .item B
-      .item C
-  +yield
+  .ui.column.stackable.grid
+    .four.wide.column
+      +profile
+    .six.wide.column
+      .row
+        +createProblem
+      .row
+        +searchProblems
+    .six.wide.column
+      +chat
 
-template(name='home')
-  +loginButtons
+template(name='createProblem')
+  h1 Create Problem
+  input.title
   br
-  +skills
-  +usersSkills
+  textarea.description
+  br
+  +skillsSearch
+  br
+  button Create
+
+template(name='chat')
+  if chat
+    h1 #{chat} Chat
+  else
+    h1 Click a problem to chat
+  .messages.border
+    each messages
+      p
+        a(href=userSite) #{username}
+        span : #{text}
+  input.new-message(placeholder='write...')
+  span.hidden.notice Message not sent, try again later!
+
+template(name='searchProblems')
+  h1 Search
+  label
+    input.solved(type='checkbox')
+    span Show solved problems
+  br
+  p Showing problems for
+  .vertical.margin.border
+    .small.fixed-height
+      each yourSkills
+        span.small.margin
+          span #{name}
+          button.remove.small.horizontal.margin(data-id=_id) x
+  +skillsSearch
+  hr
+  each problems
+    +problem
+
+template(name='skillsSearch')
+  input.search(placeholder="Add more...")
+  if searchFocused
+    .absolute.border
+      if skills
+        button.hide-results x
+        br
+      each skills
+        button.skill(data-id=_id) #{name}
+        span.hidden.notice Added!
+        br
+
+template(name='problem')
+  .problem.border.small.margin.pointer(data-id=_id)
+    h3 #{title}
+    p #{description}
+    each remoteViewers
+      i(class=icon)
 
 template(name='profile')
-  label
-    | Name:
-    input(name='name')
+  h1 Profile
+  +loginButtons
+  br
   br
   label
-    | Avatar:
-    input(type='file' name='avatar')
+    | Nick:
+    input(name='name' value=username autocomplete="off")
+    span.hidden.notice Updated!
+  br
+  ul
+    each urls
+      li
+        a(href=href) #{content}
+  h2 Stats
 
-template(name='skills')
+template(name='skillsCRUD')
   input.create(placeholder='Create skills...')
   span.hidden.notice Created!
   br
@@ -45,24 +104,6 @@ template(name='usersSkills')
 
 template(name='skillsShow')
   h1 Skills
+  +skills
+  +usersSkills
 
-template(name='userSkills')
-  h1 User #{_id} #{name}
-  ul
-    each urls
-      li
-        a(href=href) #{content}
-  br
-  input.search(placeholder="Add skills...")
-  br
-  .fixed-height
-    each skills
-      button.skill(data-id=_id) #{name}
-      span.hidden.notice Added!
-      br
-  h2 Added Skills
-  each yourSkills
-    span.fixed-width #{name}
-    button.remove(data-id=_id) Remove
-    span.hidden.notice Removed!
-    br

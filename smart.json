@@ -2,6 +2,7 @@
   "packages": {
     "jade": {},
     "iron-router": {},
-    "semantic-ui": {}
+    "semantic-ui": {},
+    "houston": {}
   }
 }

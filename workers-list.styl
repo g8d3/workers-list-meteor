@@ -4,8 +4,26 @@
   height: 150px
   overflow: auto
   width: 20em
+  &.small
+    height: 2.5em
 .fixed-width
-  width: 10em
+  width: 9em
   display: inline-block
 .hidden
   display: none
+.margin
+  &.horizontal
+    &.small
+      margin-right: 1ex
+      margin-left: 1ex
+  &.vertical
+    margin-top: 1em
+    margin-bottom: 1em
+  &.small
+    margin: 1ex
+.border
+  border: 1px solid black
+.absolute
+  position:absolute
+.pointer
+  cursor: pointer
