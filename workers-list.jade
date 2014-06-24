@@ -13,12 +13,13 @@ template(name='layout')
     +loginButtons
 
 template(name='createProblem')
-  h1 Create Problem
+  h1 Share
   input.title
   br
   textarea.description
   br
-  +skillsSearch
+  with 'createProblem'
+    +skillsSearch
   br
   button Create
 
@@ -30,11 +31,14 @@ template(name='chat')
     h1 Click a problem to chat
   .messages.border
     each messages
-      .small.margin
-        a(href=userSite) #{username}
-        span : #{text}
+      +message
   input.new-message(placeholder='write...')
   span.hidden.notice Message not sent, try again later!
+
+template(name='message')
+  .small.margin
+    a(href=userSite target='_blank') #{username}
+    span : #{text}
 
 template(name='searchProblems')
   h1 Search
@@ -49,7 +53,8 @@ template(name='searchProblems')
         span.small.margin
           span #{name}
           button.remove.small.horizontal.margin(data-id=_id) x
-  +skillsSearch
+  with 'searchProblems'
+    +skillsSearch
   hr
   each problems
     +problem
@@ -67,20 +72,30 @@ template(name='skillsSearch')
         br
 
 template(name='problem')
-  .problem.border.small.margin.pointer(data-id=_id)
+  .problem.border.small.margin.padding.pointer(data-id=_id)
     h3 #{title}
     p #{description}
+    each skillIds
+      +problemSkillName
     each remoteViewers
       i(class=icon)
 
+template(name='problemSkillName')
+  span.ui.small.teal.label #{name} &ensp;
+
 template(name='profile')
-  h1 Profile
+  h1 You
   +loginButtons
   br
   br
   label
     | Nick:
     input(name='name' value=username autocomplete="off")
+    span.hidden.notice Updated!
+  br
+  label
+    | Site:
+    input(name='site' value=site autocomplete="off")
     span.hidden.notice Updated!
   br
   ul

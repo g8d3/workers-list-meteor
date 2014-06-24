@@ -13,7 +13,7 @@ Meteor.Collection::match = (selector, options) ->
 
 UserSkill.allow
   insert: (userId, doc) ->
-    doc.userId == userId and not UserSkill.findOne(skillId: doc.skillId)
+    doc.userId == userId and not UserSkill.findOne(userId: userId, skillId: doc.skillId)
 
 Meteor.users.allow
   update: (userId, user) ->
@@ -39,7 +39,7 @@ if Meteor.isServer
     skillIds: [javascript]
 
   Meteor.publish null, ->
-    Meteor.users.find {}, fields: {name: 1, urls: 1}
+    Meteor.users.find {}, fields: {name: 1, urls: 1, site: 1}
 
   Meteor.methods
     removeUserSkill: (userId, skillId) ->
@@ -48,6 +48,7 @@ if Meteor.isServer
       Meteor.users.update {_id: Meteor.userId()}, attrs
 
 if Meteor.isClient
+
   Session.set('search', null)
 
   blink = (element) ->
@@ -81,34 +82,39 @@ if Meteor.isClient
   Template.usersSkills = $.extend Template.usersSkills,
     users: -> Meteor.users.find()
 
-  userSkillss = ->
-    userSkills = UserSkill.find(userId: Meteor.userId()).fetch()
-    (userSkill.skillId for userSkill in userSkills)
+  userSkills = ->
+    _userSkills = UserSkill.find(userId: Meteor.userId()).fetch()
+    (userSkill.skillId for userSkill in _userSkills)
 
   Template.skillsSearch = $.extend Template.skillsSearch,
     rendered: ->
-      Session.set('s' + @_id, null)
-      Session.set('searchFocused' + @_id, null)
+      Session.set('s' + @data, null)
+      Session.set('searchFocused' + @data, null)
 
-    searchFocused: -> Session.get('searchFocused' + @_id)
+    searchFocused: -> Session.get('searchFocused' + @)
 
     events:
       'keyup .search': (event,t) ->
-        Session.set('s' + @_id, event.target.value)
-      'focus .search': (event) -> Session.set('searchFocused' + @_id, true)
-      'click .hide-results': (event) -> Session.set('searchFocused' + @_id, false)
+        Session.set('s' + @, event.target.value)
+      'focus .search': (event) -> Session.set('searchFocused' + @, true)
+      'click .hide-results': (event) -> Session.set('searchFocused' + @, false)
 
     skills: ->
       # @_id makes session key to change for each template instance
-      if Session.get('s' + @_id)
-        Skill.match name: ".*#{Session.get('s' + @_id)}.*"
+      if Session.get('s' + @)
+        Skill.match name: ".*#{Session.get('s' + @)}.*"
 
   Template.searchProblems = $.extend Template.searchProblems,
-    yourSkills: ->
-      Skill.find(_id: {$in: userSkillss()})
+    skillsSearchId: -> Session.set('ssi',)
 
-    problems: -> Problem.find
-      skillIds: {$in: userSkillss()}
+    yourSkills: ->
+      Skill.find(_id: {$in: userSkills()})
+
+    problems: -> Problem.find({
+      skillIds: {$in: userSkills()}
+    },
+      sort: {createdAt: -1}
+    )
 
     events:
       'click .skill': (event) ->
@@ -120,11 +126,26 @@ if Meteor.isClient
         skillId = event.target.dataset.id
         Meteor.call('removeUserSkill', Meteor.userId(), skillId)
 
+  Template.message = $.extend Template.message,
+    user:->
+      Meteor.users.findOne(_id: @userId)
+
+    username: ->
+      Template.message.user.call(@).name
+
+    userSite: ->
+      Template.message.user.call(@).site
+
+
   Template.problem = $.extend Template.problem,
     events:
       'click .problem': (event) ->
         Session.set('chat', @title)
         Session.set('chatId', @_id)
+
+  Template.problemSkillName = $.extend Template.problemSkillName,
+    name: ->
+      Skill.findOne(_id: '' + @).name
 
   Template.chat = $.extend Template.chat,
     chat: -> Session.get('chat')
@@ -138,20 +159,21 @@ if Meteor.isClient
         if event.which == 13
           Message.insert
             userId: Meteor.userId()
-            username: Meteor.user().name
-            userSite: Meteor.user().site
             text: event.target.value
             problemId: Session.get('chatId'), (error) ->
               unless error then event.target.value = ''
 
   Template.profile = $.extend Template.profile,
     username: -> if u = Meteor.user() then u.name
+    site: -> if u = Meteor.user() then u.site
 
     events:
       'keyup input': (event) ->
         if event.which == 13
-          name = event.target.value
-          Meteor.users.update {_id: Meteor.userId()}, $set: {name: name}, {},
+          obj = {}
+          value = event.target.value
+          obj[event.target.name] = value
+          Meteor.users.update {_id: Meteor.userId()}, $set: obj, {},
             (error) ->
               unless error then blink event.target
 
