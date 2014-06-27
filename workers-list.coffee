@@ -21,23 +21,32 @@ Meteor.users.allow
 
 if Meteor.isServer
   Houston.add_collection(Meteor.users)
-  #Skill.remove({})
-  #UserSkill.remove({})
-  #Problem.remove({})
-  meteor = Skill.seed name: 'Meteor'
-  javascript = Skill.seed name: 'Javascript'
+  Skill.remove({})
+  UserSkill.remove({})
+  Problem.remove({})
+  #Message.remove({})
+  skill = name: 'Meteor'
+  meteor = Skill.seed skill
+  skill = name: 'Javascript'
+  javascript = Skill.seed skill
 
-  Problem.seed
+
+  Problem.seed(
+    {title: 'Stuck with Meteor'},
     title: 'Stuck with Meteor'
     description: 'Not yet'
     remoteViewers: [{icon: 'team viewer'}]
     skillIds: [javascript, meteor]
-  Problem.seed
+    userId: Meteor.users.find().fetch()[1]._id
+  )
+  Problem.seed(
+    {title: 'Stuck with Javascript'},
     title: 'Stuck with Javascript'
     description: 'Not yet'
     remoteViewers: [{icon: 'screenhero'}]
     skillIds: [javascript]
-
+    userId: Meteor.users.find().fetch()[0]._id
+  )
   Meteor.publish null, ->
     Meteor.users.find {}, fields: {name: 1, urls: 1, site: 1}
 
@@ -50,6 +59,7 @@ if Meteor.isServer
 if Meteor.isClient
 
   Session.set('search', null)
+  Session.set('updatingProblem', null)
 
   blink = (element) ->
     $(element).nextAll('.hidden.notice:first').fadeIn(200, -> $(@).fadeOut(1300))
@@ -105,16 +115,16 @@ if Meteor.isClient
         Skill.match name: ".*#{Session.get('s' + @)}.*"
 
   Template.searchProblems = $.extend Template.searchProblems,
-    skillsSearchId: -> Session.set('ssi',)
 
     yourSkills: ->
       Skill.find(_id: {$in: userSkills()})
 
-    problems: -> Problem.find({
-      skillIds: {$in: userSkills()}
-    },
-      sort: {createdAt: -1}
-    )
+    problems: ->
+      Problem.find({
+        skillIds: {$in: userSkills()}
+      },
+        sort: {createdAt: -1}
+      )
 
     events:
       'click .skill': (event) ->
@@ -142,6 +152,8 @@ if Meteor.isClient
       'click .problem': (event) ->
         Session.set('chat', @title)
         Session.set('chatId', @_id)
+        problem = Problem.findOne(_id: @_id, userId: Meteor.userId())
+        Session.set('updatingProblem', problem)
 
   Template.problemSkillName = $.extend Template.problemSkillName,
     name: ->
@@ -177,9 +189,54 @@ if Meteor.isClient
             (error) ->
               unless error then blink event.target
 
-  Template.home = $.extend Template.home,
-    rendered: ->
-      $('.dropdown').dropdown()
+  Template.createProblem = $.extend Template.createProblem,
+    newProblem: -> {}
+
+  Template.updateProblem = $.extend Template.updateProblem,
+    problem: -> Session.get('updatingProblem')
+
+  Template.problemForm = $.extend Template.problemForm,
+    key: -> if id = @_id then 'searchSkills' + id else 'searchSkillsNew'
+
+    skills: ->
+      key = if id = @_id then 'searchSkills' + id else 'searchSkillsNew'
+      if @_id and !(Session.get(key) || [])[0]
+        _skills = Skill.find(_id: {$in: @skillIds || []}).fetch()
+        Session.set(key, _skills)
+      Session.get(key)
+
+    events:
+      'click .skill': (event,t) ->
+        key = if id = t.data._id then 'searchSkills' + id else 'searchSkillsNew'
+
+        skill =
+          _id: event.target.dataset.id
+          name: event.target.innerHTML
+        skills = Session.get(key) || []
+        uniqSkills = _(skills.concat(skill)).uniq (skill) -> skill._id
+        Session.set(key, uniqSkills)
+      'click .remove': (event, t) ->
+        key = if id = t.data._id then 'searchSkills' + id else 'searchSkillsNew'
+
+        skillId = event.target.dataset.id
+        skills = Session.get(key) || []
+        filteredSkills = _(skills).reject (s) -> s._id == skillId
+        Session.set(key,filteredSkills)
+
+      'click .create': (event, t) ->
+        key = if id = t.data._id then 'searchSkills' + id else 'searchSkillsNew'
+
+        obj = {}
+        for el in t.$('[name]')
+          obj[el.name] = $(el).val()
+        obj.skillIds = _(Session.get(key)).map (skill) -> skill._id
+        Problem.upsert _id: t.data._id, obj, (err) ->
+          unless err
+            t.$('[name]').val('')
+            t.$('.search').val('')
+            Session.set(key, [])
+            Session.set('updatingProblem', null)
+            blink event.target
 
 Router.configure
   layoutTemplate: 'layout'

@@ -4,7 +4,11 @@ template(name='layout')
       .four.wide.column
         +profile
       .four.wide.column
-        +createProblem
+        h1 Share
+        .row
+          +createProblem
+        .row
+          +updateProblem
       .four.wide.column
         +searchProblems
       .four.wide.column
@@ -12,28 +16,41 @@ template(name='layout')
   else
     +loginButtons
 
-template(name='createProblem')
-  h1 Share
-  input.title
+template(name='problemForm')
+  input(name='title' value=title)
   br
-  textarea.description
+  textarea(name='description')
+    | #{description}
   br
-  with 'createProblem'
+  .skillIds
+    each skills
+      span #{name}
+      button.remove.small.horizontal.margin(data-id=_id) x
+  with key
     +skillsSearch
   br
-  button Create
+  button.create Create
+  .hidden.notice Saved!
+
+template(name='createProblem')
+  with newProblem
+    +problemForm
+
+template(name='updateProblem')
+  with problem
+    +problemForm
 
 template(name='chat')
   if chat
     h1 Chat
     p Problem: #{chat}
+    .messages.border
+      each messages
+        +message
+    input.new-message(placeholder='write...')
+    span.hidden.notice Message not sent, try again later!
   else
     h1 Click a problem to chat
-  .messages.border
-    each messages
-      +message
-  input.new-message(placeholder='write...')
-  span.hidden.notice Message not sent, try again later!
 
 template(name='message')
   .small.margin
@@ -56,8 +73,9 @@ template(name='searchProblems')
   with 'searchProblems'
     +skillsSearch
   hr
-  each problems
-    +problem
+  div(style='height: 5em;')
+    each problems
+      +problem
 
 template(name='skillsSearch')
   input.search(placeholder="Add more...")
