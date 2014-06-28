@@ -29,7 +29,7 @@ template(name='problemForm')
   with key
     +skillsSearch
   br
-  button.create Create
+  button.create #{submit}
   .hidden.notice Saved!
 
 template(name='createProblem')
@@ -38,6 +38,7 @@ template(name='createProblem')
 
 template(name='updateProblem')
   with problem
+    h2 Update your problem
     +problemForm
 
 template(name='chat')

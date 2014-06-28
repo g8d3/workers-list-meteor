@@ -196,6 +196,7 @@ if Meteor.isClient
     problem: -> Session.get('updatingProblem')
 
   Template.problemForm = $.extend Template.problemForm,
+    submit: -> if @_id then 'Update' else 'Create'
     key: -> if id = @_id then 'searchSkills' + id else 'searchSkillsNew'
 
     skills: ->
