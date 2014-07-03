@@ -1,9 +1,9 @@
 #!/bin/bash
 while read line ; do
-  headers="$headers -H '$line'"
+  headers=(${headers[@]} -H "$line")
 done < public/headers.txt
-echo $headers
+echo ${headers[@]}
 curl -X PUT \
-     $headers \
+     ${headers[@]} \
      -d @'public/example.json' \
      echo.httpkit.com

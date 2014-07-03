@@ -151,6 +151,7 @@ if Meteor.isClient
         Session.set('chatId', @_id)
         problem = Problem.findOne(_id: @_id, userId: Meteor.userId())
         Session.set('updatingProblem', problem)
+        Session.set('updateSkillsInProblemForm', true)
 
   Template.problemSkillName = $.extend Template.problemSkillName,
     name: ->
@@ -199,9 +200,12 @@ if Meteor.isClient
 
     skills: ->
       key = if id = @_id then 'searchSkills' + id else 'searchSkillsNew'
-      if @_id and !(Session.get(key) || [])[0]
+
+      if @_id and Session.get('updateSkillsInProblemForm')
         _skills = Skill.find(_id: {$in: @skillIds || []}).fetch()
         Session.set(key, _skills)
+        Session.set('updateSkillsInProblemForm', false)
+
       Session.get(key)
 
     events:
@@ -214,6 +218,7 @@ if Meteor.isClient
         skills = Session.get(key) || []
         uniqSkills = _(skills.concat(skill)).uniq (skill) -> skill._id
         Session.set(key, uniqSkills)
+
       'click .remove': (event, t) ->
         key = if id = t.data._id then 'searchSkills' + id else 'searchSkillsNew'
 
@@ -229,6 +234,8 @@ if Meteor.isClient
         for el in t.$('[name]')
           obj[el.name] = $(el).val()
         obj.skillIds = _(Session.get(key)).map (skill) -> skill._id
+        obj.userId = Meteor.userId()
+
         Problem.upsert _id: t.data._id, obj, (err) ->
           unless err
             t.$('[name]').val('')

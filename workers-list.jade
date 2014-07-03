@@ -31,7 +31,7 @@ template(name='problemForm')
   .skillIds
     each skills
       span #{name}
-      button.ui.button.remove.small.horizontal.margin(data-id=_id) x
+      button.ui.red.button.remove.small.horizontal.margin(data-id=_id) x
   with key
     +skillsSearch
   br
@@ -82,23 +82,23 @@ template(name='searchProblems')
       each yourSkills
         span.small.margin
           span #{name}
-          button.ui.button.remove.small.horizontal.margin(data-id=_id) x
+          button.ui.red.button.remove.small.horizontal.margin(data-id=_id) x
   with 'searchProblems'
     +skillsSearch
   hr
-  div(style='height: 5em;')
+  div(style='height: 20em; overflow:auto')
     each problems
       +problem
 
 template(name='skillsSearch')
   input.ui.input.search(placeholder="Add more...")
   if searchFocused
-    .absolute.border.white
+    .absolute.transparent
       if skills
-        button.ui.button.hide-results x
+        button.ui.red.button.hide-results x
         br
       each skills
-        button.ui.button.skill(data-id=_id) #{name}
+        button.ui.teal.button.skill(data-id=_id) #{name}
         span.hidden.notice Added!
         br
 
