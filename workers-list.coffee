@@ -48,7 +48,7 @@ if Meteor.isServer
     userId: Meteor.users.find().fetch()[0]._id
   )
   Meteor.publish null, ->
-    Meteor.users.find {}, fields: {name: 1, urls: 1, site: 1}
+    Meteor.users.find {}, fields: {name: 1, urls: 1, site: 1, paypal: 1}
 
   Meteor.methods
     removeUserSkill: (userId, skillId) ->
@@ -137,14 +137,11 @@ if Meteor.isClient
         Meteor.call('removeUserSkill', Meteor.userId(), skillId)
 
   Template.message = $.extend Template.message,
-    user:->
-      Meteor.users.findOne(_id: @userId)
+    user:-> Meteor.users.findOne(_id: @userId)
 
-    username: ->
-      Template.message.user.call(@).name
-
-    userSite: ->
-      Template.message.user.call(@).site
+    username: -> Template.message.user.call(@).name
+    userSite: -> Template.message.user.call(@).site
+    userPaypal: -> Template.message.user.call(@).paypal
 
 
   Template.problem = $.extend Template.problem,
@@ -178,6 +175,7 @@ if Meteor.isClient
   Template.profile = $.extend Template.profile,
     username: -> if u = Meteor.user() then u.name
     site: -> if u = Meteor.user() then u.site
+    paypal: -> if u = Meteor.user() then u.paypal
 
     events:
       'keyup input': (event) ->
@@ -239,9 +237,16 @@ if Meteor.isClient
             Session.set('updatingProblem', null)
             blink event.target
 
+  Template.layout = $.extend Template.layout,
+    rendered: ->
+      $('body').on 'click', '.menu .icon', (event) ->
+        sel = "##{event.target.title.toLowerCase()}"
+        visible = $(sel).toggle().is ':visible'
+        $(event.target).toggleClass('green', visible)
+
 Router.configure
   layoutTemplate: 'layout'
 Router.map ->
   @route 'skillsShow', path: '/skills'
   @route 'home', path: '/'
-  @route 'profile', path: '/profile'
+  @route 'test', path: '/test'

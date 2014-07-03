@@ -15,3 +15,5 @@ accounts-password
 iron-router
 semantic-ui
 houston
+http
+server-eval

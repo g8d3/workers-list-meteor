@@ -3,6 +3,7 @@
     "jade": {},
     "iron-router": {},
     "semantic-ui": {},
-    "houston": {}
+    "houston": {},
+    "server-eval": {}
   }
 }

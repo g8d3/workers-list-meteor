@@ -1,35 +1,42 @@
 template(name='layout')
   if currentUser
+    .menu
+      i.big.green.home.icon.link(title='You')
+      i.big.green.add.sign.icon.link(title='Share')
+      i.big.green.search.icon.default-margin.link(title='Search')
+      i.big.green.chat.icon.link(title='Chat')
     .ui.column.stackable.grid
-      .four.wide.column
-        +profile
-      .four.wide.column
-        h1 Share
-        .row
-          +createProblem
-        .row
-          +updateProblem
-      .four.wide.column
-        +searchProblems
-      .four.wide.column
-        +chat
+      .equal.height.row
+        #you.four.wide.column
+          +profile
+        #share.four.wide.column
+          h1 Share
+          .row
+            +createProblem
+          .row
+            +updateProblem
+        #search.four.wide.column
+          +searchProblems
+        #chat.four.wide.column
+          +chat
   else
-    +loginButtons
+    +loginbutton.ui.buttons
 
 template(name='problemForm')
-  input(name='title' value=title)
+  input.ui.input(name='title' value=title placeholder='Title')
   br
-  textarea(name='description')
+  textarea(name='description' placeholder='Description')
     | #{description}
   br
   .skillIds
     each skills
       span #{name}
-      button.remove.small.horizontal.margin(data-id=_id) x
+      button.ui.button.remove.small.horizontal.margin(data-id=_id) x
   with key
     +skillsSearch
   br
-  button.create #{submit}
+  br
+  button.ui.black.button.create #{submit}
   .hidden.notice Saved!
 
 template(name='createProblem')
@@ -48,20 +55,25 @@ template(name='chat')
     .messages.border
       each messages
         +message
-    input.new-message(placeholder='write...')
+    input.ui.input.new-message(placeholder='write...')
     span.hidden.notice Message not sent, try again later!
   else
-    h1 Click a problem to chat
+    p Click a problem to chat
 
 template(name='message')
   .small.margin
     a(href=userSite target='_blank') #{username}
+    if userPaypal
+      span
+        |(
+        a(href=userPaypal) Donate
+        |)
     span : #{text}
 
 template(name='searchProblems')
   h1 Search
   label
-    input.solved(type='checkbox')
+    input.ui.input.solved(type='checkbox')
     span Show solved problems
   br
   p Showing problems for
@@ -70,7 +82,7 @@ template(name='searchProblems')
       each yourSkills
         span.small.margin
           span #{name}
-          button.remove.small.horizontal.margin(data-id=_id) x
+          button.ui.button.remove.small.horizontal.margin(data-id=_id) x
   with 'searchProblems'
     +skillsSearch
   hr
@@ -79,14 +91,14 @@ template(name='searchProblems')
       +problem
 
 template(name='skillsSearch')
-  input.search(placeholder="Add more...")
+  input.ui.input.search(placeholder="Add more...")
   if searchFocused
     .absolute.border.white
       if skills
-        button.hide-results x
+        button.ui.button.hide-results x
         br
       each skills
-        button.skill(data-id=_id) #{name}
+        button.ui.button.skill(data-id=_id) #{name}
         span.hidden.notice Added!
         br
 
@@ -105,16 +117,19 @@ template(name='problemSkillName')
 template(name='profile')
   h1 You
   +loginButtons
-  br
-  br
   label
-    | Nick:
-    input(name='name' value=username autocomplete="off")
+    p Nick:
+    input.ui.input(name='name' value=username autocomplete="off")
     span.hidden.notice Updated!
   br
   label
-    | Site:
-    input(name='site' value=site autocomplete="off")
+    p Site:
+    input.ui.input(name='site' value=site autocomplete="off")
+    span.hidden.notice Updated!
+  br
+  label
+    p(title='Email address to receive donations') Paypal:
+    input.ui.input(name='paypal' value=paypal autocomplete="off")
     span.hidden.notice Updated!
   br
   ul
@@ -124,14 +139,14 @@ template(name='profile')
   h2 Stats
 
 template(name='skillsCRUD')
-  input.create(placeholder='Create skills...')
+  input.ui.input.create(placeholder='Create skills...')
   span.hidden.notice Created!
   br
-  input.search(placeholder='Search skills...')
+  input.ui.input.search(placeholder='Search skills...')
   .fixed-height
     each skills
-      input.edit.skill(value=name data-id=_id)
-      button.remove(data-id=_id) Remove
+      input.ui.input.edit.skill(value=name data-id=_id)
+      button.ui.button.remove(data-id=_id) Remove
       span.hidden.notice Edited!
       br
 
@@ -143,4 +158,7 @@ template(name='skillsShow')
   h1 Skills
   +skills
   +usersSkills
+
+template(name='test')
+  h1 test
 
