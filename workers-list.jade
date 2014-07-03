@@ -1,24 +1,20 @@
 template(name='layout')
   if currentUser
     .menu
-      i.big.green.home.icon.link(title='You')
+      i.big.green.user.icon.link(title='You')
       i.big.green.add.sign.icon.link(title='Share')
       i.big.green.search.icon.default-margin.link(title='Search')
       i.big.green.chat.icon.link(title='Chat')
-    .ui.column.stackable.grid
-      .equal.height.row
-        #you.four.wide.column
-          +profile
-        #share.four.wide.column
-          h1 Share
-          .row
-            +createProblem
-          .row
-            +updateProblem
-        #search.four.wide.column
-          +searchProblems
-        #chat.four.wide.column
-          +chat
+    #you.ui.red.sidebar
+      +profile
+    #share.ui.blue.sidebar
+      h1 Share
+      +createProblem
+    #search.ui.purple.sidebar
+      +searchProblems
+    #chat.ui.sidebar
+      +chat
+      +updateProblem
   else
     +loginbutton.ui.buttons
 
@@ -99,7 +95,7 @@ template(name='skillsSearch')
         br
       each skills
         button.ui.teal.button.skill(data-id=_id) #{name}
-        span.hidden.notice Added!
+        // span.hidden.notice Added!
         br
 
 template(name='problem')
@@ -112,7 +108,7 @@ template(name='problem')
       i(class=icon)
 
 template(name='problemSkillName')
-  span.ui.small.teal.label #{name} &ensp;
+  span.ui.small.teal.label.skill #{name} &ensp;
 
 template(name='profile')
   h1 You

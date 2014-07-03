@@ -152,6 +152,8 @@ if Meteor.isClient
         problem = Problem.findOne(_id: @_id, userId: Meteor.userId())
         Session.set('updatingProblem', problem)
         Session.set('updateSkillsInProblemForm', true)
+        $('#search').sidebar('toggle')
+        $('#chat').sidebar('toggle')
 
   Template.problemSkillName = $.extend Template.problemSkillName,
     name: ->
@@ -248,7 +250,7 @@ if Meteor.isClient
     rendered: ->
       $('body').on 'click', '.menu .icon', (event) ->
         sel = "##{event.target.title.toLowerCase()}"
-        visible = $(sel).toggle().is ':visible'
+        visible = $(sel).sidebar('toggle').is ':visible'
         $(event.target).toggleClass('green', visible)
 
 Router.configure
